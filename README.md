@@ -25,7 +25,19 @@ A Python-based solution for automatically printing files from hot folders. This 
    cd batch-print-hot-folder
    ```
 
-2. Install required dependencies:
+2. Run the setup script:
+   
+   **Linux/macOS:**
+   ```bash
+   ./setup.sh
+   ```
+   
+   **Windows:**
+   ```cmd
+   setup.bat
+   ```
+   
+   Or install manually:
    ```bash
    pip install -r requirements.txt
    ```
