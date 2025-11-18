@@ -1,0 +1,20 @@
+{
+  "hot_folders": [
+    {
+      "name": "MainPrinter",
+      "watch_path": "/path/to/hot/folder1",
+      "printer_name": "Your Printer Name",
+      "success_folder": "/path/to/hot/folder1/Success",
+      "error_folder": "/path/to/hot/folder1/Error"
+    },
+    {
+      "name": "SecondaryPrinter",
+      "watch_path": "/path/to/hot/folder2",
+      "printer_name": "Another Printer Name",
+      "success_folder": "/path/to/hot/folder2/Success",
+      "error_folder": "/path/to/hot/folder2/Error"
+    }
+  ],
+  "poll_interval": 5,
+  "log_level": "INFO"
+}
