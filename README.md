@@ -85,6 +85,13 @@ A Python-based solution for automatically printing files from hot folders. This 
       "printer_name": "Your Printer Name",
       "success_folder": "/path/to/hot/folder1/Success",
       "error_folder": "/path/to/hot/folder1/Error"
+    },
+    {
+      "name": "DefaultPrinter",
+      "watch_path": "/path/to/hot/folder2",
+      "printer_name": "",
+      "success_folder": "/path/to/hot/folder2/Success",
+      "error_folder": "/path/to/hot/folder2/Error"
     }
   ],
   "poll_interval": 5,
@@ -96,13 +103,15 @@ A Python-based solution for automatically printing files from hot folders. This 
 
 - **name**: A descriptive name for the hot folder (for logging purposes)
 - **watch_path**: The folder to monitor for new files
-- **printer_name**: The name of the printer to use (must match the printer name in your OS)
+- **printer_name**: The name of the printer to use (must match the printer name in your OS). Set to empty string `""` or omit to use the system's default printer
 - **success_folder**: Where successfully printed files will be moved
 - **error_folder**: Where failed files will be moved
 - **poll_interval**: How often (in seconds) to check for pending files
 - **log_level**: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
 ### Finding Printer Names
+
+To use a specific printer, you need to know its exact name in your operating system.
 
 **Windows:**
 ```cmd
@@ -119,6 +128,9 @@ lpstat -p | awk '{print $2}'
 ```bash
 lpstat -p | awk '{print $2}'
 ```
+
+**Using the Default Printer:**
+You can configure a hot folder to use the system's default printer by setting `printer_name` to an empty string `""` in the configuration. This is useful when you want the hot folder to automatically use whichever printer is currently set as the default in your operating system.
 
 ## Usage
 
