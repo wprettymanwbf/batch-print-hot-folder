@@ -100,7 +100,8 @@ class PrintHandler(FileSystemEventHandler):
     
     def print_file(self, file_path: str) -> bool:
         """Print a file using the OS default application"""
-        self.logger.info(f"Attempting to print: {file_path}")
+        printer_info = self.config.printer_name if self.config.printer_name else "default printer"
+        self.logger.info(f"Attempting to print: {file_path} to {printer_info}")
         
         try:
             system = platform.system()
@@ -110,19 +111,28 @@ class PrintHandler(FileSystemEventHandler):
                 import win32print
                 import win32api
                 
-                # Set the printer
+                # Set the printer if a specific one is configured
                 if self.config.printer_name:
                     win32print.SetDefaultPrinter(self.config.printer_name)
-                
-                # Print using ShellExecute with 'print' verb
-                win32api.ShellExecute(
-                    0,
-                    "print",
-                    file_path,
-                    f'/d:"{self.config.printer_name}"',
-                    ".",
-                    0
-                )
+                    # Print using ShellExecute with 'print' verb and specific printer
+                    win32api.ShellExecute(
+                        0,
+                        "print",
+                        file_path,
+                        f'/d:"{self.config.printer_name}"',
+                        ".",
+                        0
+                    )
+                else:
+                    # Use default printer (no printer parameter)
+                    win32api.ShellExecute(
+                        0,
+                        "print",
+                        file_path,
+                        None,
+                        ".",
+                        0
+                    )
                 
             elif system == "Darwin":  # macOS
                 # Use lpr command for printing

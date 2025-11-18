@@ -71,7 +71,7 @@ A Python-based solution for automatically printing files from hot folders. This 
 
 - **name**: A descriptive name for the hot folder (for logging purposes)
 - **watch_path**: The folder to monitor for new files
-- **printer_name**: The name of the printer to use (must match the printer name in your OS)
+- **printer_name**: The name of the printer to use (must match the printer name in your OS). To use the system's default printer, set this to an empty string `""`
 - **success_folder**: Where successfully printed files will be moved
 - **error_folder**: Where failed files will be moved
 - **poll_interval**: How often (in seconds) to check for pending files
@@ -94,6 +94,25 @@ lpstat -p | awk '{print $2}'
 ```bash
 lpstat -p | awk '{print $2}'
 ```
+
+### Using the Default Printer
+
+If you want a hot folder to use the system's current default printer (rather than a specific printer), set the `printer_name` to an empty string:
+
+```json
+{
+  "name": "DefaultPrinterFolder",
+  "watch_path": "/path/to/hot/folder",
+  "printer_name": "",
+  "success_folder": "/path/to/hot/folder/Success",
+  "error_folder": "/path/to/hot/folder/Error"
+}
+```
+
+This is useful when:
+- You want the flexibility to change which printer is used without modifying the configuration
+- You have a single printer that is already set as the default
+- You're testing the application and want to use whatever printer is available
 
 ## Usage
 

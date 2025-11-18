@@ -8,11 +8,12 @@
       "error_folder": "/path/to/hot/folder1/Error"
     },
     {
-      "name": "SecondaryPrinter",
+      "name": "DefaultPrinter",
       "watch_path": "/path/to/hot/folder2",
-      "printer_name": "Another Printer Name",
+      "printer_name": "",
       "success_folder": "/path/to/hot/folder2/Success",
-      "error_folder": "/path/to/hot/folder2/Error"
+      "error_folder": "/path/to/hot/folder2/Error",
+      "comment": "Empty printer_name uses the system's default printer"
     }
   ],
   "poll_interval": 5,
