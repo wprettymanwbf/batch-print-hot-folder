@@ -2,6 +2,30 @@
 
 A Python-based solution for automatically printing files from hot folders. This application monitors designated folders and automatically prints any files copied into them using the OS default application for each file type.
 
+## Quick Start
+
+1. **Install**: Clone the repository and install dependencies
+   ```bash
+   git clone https://github.com/wprettymanwbf/batch-print-hot-folder.git
+   cd batch-print-hot-folder
+   pip install -r requirements.txt
+   ```
+
+2. **Configure**: Copy and edit the configuration file
+   ```bash
+   cp config.example.json config.json
+   # Edit config.json with your folder paths and printer names
+   ```
+
+3. **Run**: Start the service
+   ```bash
+   python batch_print.py
+   ```
+
+4. **Use**: Copy files to your configured hot folder(s) and they will be automatically printed
+
+5. **Monitor**: Check `batch_print.log` for detailed activity logs
+
 ## Features
 
 - **Multiple Hot Folders**: Configure as many hot folders as needed, each with its own printer
@@ -11,6 +35,7 @@ A Python-based solution for automatically printing files from hot folders. This 
 - **Configurable**: Simple JSON configuration file
 - **Automatic Folder Creation**: Success and Error folders are created automatically
 - **File Type Agnostic**: Prints any file type using the OS default application
+- **Human-Readable Logs**: Detailed logging with timestamps and visual indicators for easy monitoring
 
 ## Requirements
 
@@ -161,11 +186,38 @@ To stop the service, press `Ctrl+C`.
 
 ## Logging
 
-The application logs all activities to:
-- Console output (stdout)
-- `batch_print.log` file in the application directory
+The application provides comprehensive, human-readable logging to help you monitor the service:
 
-Log levels can be configured in `config.json` using the `log_level` parameter.
+### Log Output Locations
+- **Console**: Real-time status updates displayed in your terminal
+- **Log File**: `batch_print.log` in the application directory with full timestamps
+
+### Log Format
+Logs use a clean, easy-to-read format with visual indicators:
+```
+2025-11-18 14:30:15 | INFO     | ======================================================================
+2025-11-18 14:30:15 | INFO     |   BATCH PRINT HOT FOLDER SERVICE
+2025-11-18 14:30:15 | INFO     | ======================================================================
+2025-11-18 14:30:15 | INFO     | Watching Folder: /path/to/hot/folder
+2025-11-18 14:30:15 | INFO     |   → Printer: My Printer
+2025-11-18 14:30:20 | INFO     | 📄 NEW FILE DETECTED: document.pdf
+2025-11-18 14:30:22 | INFO     | 🖨️  PRINTING: document.pdf (125.3 KB)
+2025-11-18 14:30:24 | INFO     | ✅ Print job sent successfully: document.pdf
+2025-11-18 14:30:24 | INFO     |    ➜ Moved to Success folder: document.pdf
+```
+
+### Log Levels
+Configure the detail level in `config.json` using the `log_level` parameter:
+- **DEBUG**: Detailed diagnostic information for troubleshooting
+- **INFO**: General information about service operation (default)
+- **WARNING**: Warning messages for potential issues
+- **ERROR**: Error messages for failed operations
+- **CRITICAL**: Critical errors that may stop the service
+
+### Viewing Logs
+- **Real-time**: Watch the console while the service runs
+- **Historical**: Open `batch_print.log` in any text editor
+- **Tail logs**: Use `tail -f batch_print.log` (Linux/macOS) to follow in real-time
 
 ## Example Workflow
 
