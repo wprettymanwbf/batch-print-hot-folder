@@ -103,6 +103,41 @@ To stop the service, press `Ctrl+C`.
 
 ## How It Works
 
+```
+┌─────────────────┐
+│   Hot Folder    │  ← User copies files here
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  File Detection & Monitoring    │  (watchdog library)
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  File Readiness Check           │  (ensures complete copy)
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  Alphabetical Sorting           │  (sort by filename)
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  Print to Configured Printer    │  (OS default app)
+└────────┬────────────────────────┘
+         │
+    ┌────┴────┐
+    │         │
+    ▼         ▼
+┌────────┐ ┌───────┐
+│Success │ │ Error │  ← Files moved here based on print result
+└────────┘ └───────┘
+```
+
+### Process Details
+
 1. **File Detection**: The application uses the `watchdog` library to monitor hot folders for new files
 2. **File Readiness**: Before processing, the app ensures files are completely written (not still being copied)
 3. **Alphabetical Sorting**: Pending files are sorted alphabetically by filename
