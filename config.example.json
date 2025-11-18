@@ -13,6 +13,13 @@
       "printer_name": "Another Printer Name",
       "success_folder": "/path/to/hot/folder2/Success",
       "error_folder": "/path/to/hot/folder2/Error"
+    },
+    {
+      "name": "DefaultPrinter",
+      "watch_path": "/path/to/hot/folder3",
+      "printer_name": "",
+      "success_folder": "/path/to/hot/folder3/Success",
+      "error_folder": "/path/to/hot/folder3/Error"
     }
   ],
   "poll_interval": 5,

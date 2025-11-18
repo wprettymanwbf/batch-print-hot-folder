@@ -10,18 +10,64 @@ import shutil
 import subprocess
 import platform
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 
 
+def get_default_printer() -> Optional[str]:
+    """Get the system's default printer name"""
+    try:
+        system = platform.system()
+        
+        if system == "Windows":
+            # Windows: Get default printer using win32print
+            import win32print
+            return win32print.GetDefaultPrinter()
+            
+        elif system == "Darwin":  # macOS
+            # Use lpstat -d to get default printer
+            result = subprocess.run(
+                ["lpstat", "-d"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            # Output format: "system default destination: PrinterName"
+            output = result.stdout.strip()
+            if ":" in output:
+                return output.split(":")[-1].strip()
+            return None
+            
+        elif system == "Linux":
+            # Use lpstat -d to get default printer
+            result = subprocess.run(
+                ["lpstat", "-d"],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            # Output format: "system default destination: PrinterName"
+            output = result.stdout.strip()
+            if ":" in output:
+                return output.split(":")[-1].strip()
+            return None
+            
+        else:
+            return None
+            
+    except Exception:
+        # If we can't get the default printer, return None
+        return None
+
+
 class HotFolderConfig:
     """Configuration for a single hot folder"""
-    def __init__(self, name: str, watch_path: str, printer_name: str, 
+    def __init__(self, name: str, watch_path: str, printer_name: Optional[str], 
                  success_folder: str, error_folder: str):
         self.name = name
         self.watch_path = watch_path
-        self.printer_name = printer_name
+        self.printer_name = printer_name if printer_name else None
         self.success_folder = success_folder
         self.error_folder = error_folder
         
@@ -111,6 +157,16 @@ class PrintHandler(FileSystemEventHandler):
         file_size = os.path.getsize(file_path)
         size_kb = file_size / 1024
         
+        # Determine which printer to use
+        printer_to_use = self.config.printer_name
+        if not printer_to_use:
+            # Get default printer if none specified
+            printer_to_use = get_default_printer()
+            if not printer_to_use:
+                self.logger.error(f"❌ No printer specified and no default printer available")
+                return False
+            self.logger.info(f"Using default printer: {printer_to_use}")
+        
         self.logger.info(f"🖨️  PRINTING: {filename} ({size_kb:.1f} KB)")
         
         try:
@@ -122,35 +178,26 @@ class PrintHandler(FileSystemEventHandler):
                 import win32api
                 
                 # Set the printer
-                if self.config.printer_name:
-                    win32print.SetDefaultPrinter(self.config.printer_name)
+                win32print.SetDefaultPrinter(printer_to_use)
                 
                 # Print using ShellExecute with 'print' verb
                 win32api.ShellExecute(
                     0,
                     "print",
                     file_path,
-                    f'/d:"{self.config.printer_name}"',
+                    f'/d:"{printer_to_use}"',
                     ".",
                     0
                 )
                 
             elif system == "Darwin":  # macOS
                 # Use lpr command for printing
-                cmd = ["lpr"]
-                if self.config.printer_name:
-                    cmd.extend(["-P", self.config.printer_name])
-                cmd.append(file_path)
-                
+                cmd = ["lpr", "-P", printer_to_use, file_path]
                 subprocess.run(cmd, check=True)
                 
             elif system == "Linux":
                 # Use lp command for printing
-                cmd = ["lp"]
-                if self.config.printer_name:
-                    cmd.extend(["-d", self.config.printer_name])
-                cmd.append(file_path)
-                
+                cmd = ["lp", "-d", printer_to_use, file_path]
                 subprocess.run(cmd, check=True)
                 
             else:
@@ -237,10 +284,15 @@ class BatchPrintService:
             self.poll_interval = config.get('poll_interval', 5)
             
             for folder_config in config.get('hot_folders', []):
+                # Get printer name, allowing it to be None/empty for default printer
+                printer_name = folder_config.get('printer_name')
+                if printer_name == "":
+                    printer_name = None
+                    
                 hot_folder = HotFolderConfig(
                     name=folder_config['name'],
                     watch_path=folder_config['watch_path'],
-                    printer_name=folder_config['printer_name'],
+                    printer_name=printer_name,
                     success_folder=folder_config['success_folder'],
                     error_folder=folder_config['error_folder']
                 )
@@ -271,7 +323,14 @@ class BatchPrintService:
             self.observers.append(observer)
             
             self.logger.info(f"Watching Folder: {hot_folder.watch_path}")
-            self.logger.info(f"  → Printer: {hot_folder.printer_name}")
+            if hot_folder.printer_name:
+                self.logger.info(f"  → Printer: {hot_folder.printer_name}")
+            else:
+                default_printer = get_default_printer()
+                if default_printer:
+                    self.logger.info(f"  → Printer: {default_printer} (system default)")
+                else:
+                    self.logger.info(f"  → Printer: System default (none currently set)")
             self.logger.info(f"  → Success: {hot_folder.success_folder}")
             self.logger.info(f"  → Error: {hot_folder.error_folder}")
             self.logger.info("")
