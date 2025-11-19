@@ -1,2 +1,3 @@
 watchdog==3.0.0
-pywin32==306; sys_platform == 'win32'
+# Allow modern pywin32 builds for newer Pythons (3.13+); pins to tested range
+pywin32>=307,<312; sys_platform == 'win32'

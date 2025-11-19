@@ -21,7 +21,16 @@ echo.
 
 REM Install dependencies
 echo Installing dependencies...
-pip install -r requirements.txt
+echo Upgrading pip to latest available for this Python...
+python -m pip install --upgrade pip
+if %errorlevel% neq 0 (
+    echo Warning: pip upgrade failed or was not necessary. Continuing with the current pip.
+) else (
+    echo pip upgraded successfully
+)
+
+echo Installing Python dependencies from requirements.txt...
+python -m pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo Failed to install dependencies
     pause
